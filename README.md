@@ -30,13 +30,15 @@ Add this markup into your website
 <script src="https://raw.githubusercontent.com/webcom-components/feedy/master/dist/feedy.js"></script>
 ```
 
-Add this markup at the end of body
+Add this markup at the end of &lt;body&gt;
 
 ```html
 <script>
 feedy({
-  namespaceUrl: 'https://webcom.orange.com/base/<YOUR_NAMESPACE>'
-  appName: '<YOUR_APP_NAME>'
+	// optional, default is 'https://webcom.orange.com/base/feedy'
+	namespaceUrl: 'https://webcom.orange.com/base/<YOUR_NAMESPACE>',
+	// optional, default is 'general'
+	appName: '<YOUR_APP_NAME>' 
 });
 </script>
 ```
