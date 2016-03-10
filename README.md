@@ -30,6 +30,17 @@ Add this markup into your website
 <script src="https://raw.githubusercontent.com/webcom-components/feedy/master/dist/feedy.js"></script>
 ```
 
+Add this markup at the end of body
+
+```html
+<script>
+feedy({
+  namespaceUrl: 'https://webcom.orange.com/base/<YOUR_NAMESPACE>'
+  appName: '<YOUR_APP_NAME>'
+});
+</script>
+```
+
 ## How to contribute
 
 Ensure you have [node][node-link] greater than version 4 (Code contains es6 syntax)
