@@ -1,0 +1,103 @@
+:global(.reset).container {
+  font-size: 14px;
+  position: fixed;
+  bottom: 0;
+  right: 2em;
+  padding-bottom: 1em;
+  background-color: #FFF;
+  color: #333;
+  width: 20em;
+  transition: bottom 0.2s;
+  font-family: arial;
+  box-shadow: 0px 0px 3px 2px rgba(0,0,0,0.1);
+  border-top-left-radius: 0.3em;
+  border-top-right-radius: 0.3em;
+  z-index: 10000;
+}
+
+.container .header {
+  padding: 0.5em 1em;
+  background-color: #F60;
+  color: #EEE; 
+  text-align: center;
+  cursor: pointer;
+  border-top-left-radius: 0.3em;
+  border-top-right-radius: 0.3em;
+}
+
+.container .header:hover {
+  background-color: #F71;
+  color: #FFF;
+}
+
+
+.container .content {
+  margin: 0.5em 1.4em;
+}
+
+.container .group {
+  margin-top: 1em;
+}
+
+:global(.reset).container label, 
+:global(.reset).container input, 
+:global(.reset).container textarea {
+  display: block;
+  width: 100%;
+  font-size: 1em;
+  font-family: arial;
+}
+
+
+:global(.reset).container label {
+  font-weight: bold;
+}
+
+:global(.reset).container input, 
+:global(.reset).container textarea {
+  padding: 0.4em;
+  border: 1px solid #CCC;
+  border-radius: 0.3em;
+  box-sizing: border-box;
+}
+
+:global(.reset).container textarea {
+  resize: vertical;
+}
+
+:global(.reset).container input:focus, 
+:global(.reset).container textarea:focus {
+  outline: #F60 auto 2px;
+}
+
+:global(.reset).container input[type=submit] {
+  margin-top: 1em;
+  background: #F60;
+  color: #EEE;
+  font-weight: bold;
+  border:none;
+  padding: 0.5em;
+}
+
+:global(.reset).container input[type=checkbox], 
+:global(.reset).container input[type=checkbox] ~ label {
+  display: inline-block;
+  width: auto;
+}
+
+:global(.reset).container label {
+  padding: 0.5em 0 0.3em 0; 
+}
+
+.container .error {
+  color: red;
+}
+
+:global(.reset).container :global(a) {
+  color: #F60;
+  text-decoration: none;
+}
+
+:global(.reset).container :global(a:hover) {
+  text-decoration: underline;
+}

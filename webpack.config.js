@@ -8,40 +8,38 @@ const process = require('process');
 
 const config = {
 	entry: {
-		vendor: [
+		app: [
 			'imports?exports=>false&module=>false!jquery',
-			'imports?exports=>false&module=>false!react',
+			'imports?exports=>false&module=>false!webcom',
+			'script!es6-promise',
+			'imports?this=>global!exports?global.fetch!whatwg-fetch',
+			'script!html2canvas',
+			'react',
+			'./src/assets/images/test.jpg',
 			'react-dom',
-			'imports?exports=>false&module=>false!bootstrapjs'
-		],
-		app: './src/index.js'
+			'./src/index'
+		]
 	}, 
 	output: {
 		path: path.join(__dirname, './dist'),
-		filename: 'bundle.js',
-		publicPath: process.env.PUBLIC_PATH || '/'
+		filename: 'feedy.js',
+		publicPath: process.env.PUBLIC_PATH || '/',
+		libraryTarget: 'umd',
+		library: 'feedy'
 	},
 	resolve: {
-		extensions: ['', '.webpack.js', '.web.js', '.js', '.less'],
+		extensions: ['', '.webpack.js', '.web.js', '.js', '.css'],
 		root: __dirname,
 		alias: {
 			jquery: 'jquery/dist/jquery.min.js',
-			react: 'react/dist/react.min.js',
-			'react-dom': 'react-dom/dist/react-dom.min.js',
-			'bootstrapjs': 'bootstrap/dist/js/bootstrap.min.js'
+			webcom: 'webcom/webcom.js'
 		}
 	},
 	module: {
-		preLoaders: [
-			{ test: /\.js$/, loader: 'eslint', exclude: /node_modules/}  
-		],
 		loaders: [
 			{ test: /\.js/, loaders: ['babel'], exclude: /node_modules/ },
-			{ test: /\.woff2?(\?v=\d+\.\d+\.\d+)?$/,   loader: 'url?limit=100000&mimetype=application/font-woff' },
-			{ test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,    loader: 'url?limit=100000&mimetype=application/octet-stream' },
-			{ test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,    loader: 'file' },
-			{ test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,    loader: 'url?limit=100000&mimetype=image/svg+xml' },
-			{ test: /\.jpg$/, loader: 'url?limit?100000'}
+			{ test: /\.jpg$/, loader: 'file?name=[name].[ext]'},
+			{ test: /\.less/, loaders: [ 'style', 'css?sourceMap', 'less?sourceMap' ]}
 		],
 		noParse: [
 			/react\.min\.js$/,
@@ -52,42 +50,34 @@ const config = {
 	plugins: [
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
-			inject: 'body'
-		}),
-		new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.bundle.js')
+			inject: 'head'
+		})
 	],				
 	progress: true,
 	target: 'web'
 };
 
 if (process.env.NODE_ENV !== 'production') {
-	config.entry.vendor = config.entry.vendor.concat([
+	config.entry.app = [
 		'./hotReload',
 		'webpack/hot/dev-server'
-	]);
+	].concat(config.entry.app);
+
 	config.module.loaders = config.module.loaders.concat([
-		{ test: /\.less/, loaders: [
+		{ test: /\.css/, loaders: [
 			'style',
-			'css?sourceMap',
-			'less?sourceMap'
+			'css?sourceMap&modules'
 		]}
 	]);
-	config.devtool = 'eval-cheap-module-source-map';
+	config.devtool = 'source-map';
 	config.debug = true;
 } else {
-	config.plugins = config.plugins.concat([
-		new webpack.optimize.OccurenceOrderPlugin(),
-		new webpack.optimize.DedupePlugin(),
-		new webpack.optimize.UglifyJsPlugin(),
-		new ExtractTextPlugin('[name].css')
-	]);
 	config.module.loaders = config.module.loaders.concat([
-		{ test: /\.less/, loader: ExtractTextPlugin.extract(
+		{ test: /\.css/, loaders:[
 			'style',
-			'css-loader?sourceMap&minimize!less-loader?sourceMap'
-		)}
+			'css-loader?minimize&modules'
+		]}
 	]);
-	config.devtool = 'source-map';
 	config.debug = false;
 }
 

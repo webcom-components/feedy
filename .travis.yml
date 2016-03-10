@@ -6,11 +6,10 @@ cache:
 notifications:
   on_failure: change
 node_js:
-  - stable
-  - "4"
+  - "5"
 before_script:
   - npm prune
-script: PUBLIC_PATH=/webpack-boilerplate npm run build
+script: PUBLIC_PATH=/feedy npm run build
 after_success:
   - 'curl -Lo travis_after_all.py https://git.io/travis_after_all'
   - python travis_after_all.py
