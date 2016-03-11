@@ -27,7 +27,7 @@ Feedback widget for your web apps. Made with [Webcom][webcom-link]
 Add this markup into your website
 
 ```html
-<script src="https://npmcdn.com/feedy@1.0.0/dist/feedy.js"></script>
+<script src="https://npmcdn.com/feedy/dist/feedy.js"></script>
 ```
 
 Add this markup at the end of &lt;body&gt;
