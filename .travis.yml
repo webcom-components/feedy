@@ -15,7 +15,6 @@ after_success:
   - python travis_after_all.py
   - 'export $(cat .to_export_back) &> /dev/null'
   - npm run semantic-release
-  - bash ./deploy-gh-pages.sh
 branches:
   except:
     - "/^v\\d+\\.\\d+\\.\\d+$/"

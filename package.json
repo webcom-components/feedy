@@ -1,6 +1,5 @@
 {
   "name": "feedy",
-  "version": "1.0.0",
   "description": "feedback widget using Webcom",
   "main": "src/index.js",
   "keywords": [
@@ -26,7 +25,7 @@
     "start": "webpack-dev-server --hot --host 0.0.0.0",
     "build": "rimraf dist && cross-env NODE_ENV=production webpack --progress --colors -p",
     "serve": "cross-env NODE_ENV=production webpack-dev-server --host 0.0.0.0",
-    "semantic-release": "semantic-release pre  && npm publish && semantic-release post"
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "author": "Paul Musso",
   "engineStrict": true,
