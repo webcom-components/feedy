@@ -10,21 +10,27 @@ import s from './styles';
 export default class Feedy extends Component {
 	static propTypes = {
 		appName: React.PropTypes.string,
-		namespaceUrl: React.PropTypes.string
+		namespaceUrl: React.PropTypes.string,
+		screenshot: React.PropTypes.bool
 	}
 
 	constructor(props) {
 		super();
 		this.ref = new Webcom(`${props.namespaceUrl}/${props.appName}`);
+		this.config = {
+			screenshot: props.screenshot
+		};
 	}
 
 	static childContextTypes = {
-		ref: React.PropTypes.object.isRequired
+		ref: React.PropTypes.object.isRequired,
+		config: React.PropTypes.object.isRequired
 	}
 
 	getChildContext() {
 		return {
-			ref: this.ref
+			ref: this.ref,
+			config: this.config
 		}
 	}
 

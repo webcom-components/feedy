@@ -40,6 +40,8 @@ feedy({
 	namespaceUrl: 'https://webcom.orange.com/base/<YOUR_NAMESPACE>',
 	// optional, default is 'general'
 	appName: '<YOUR_APP_NAME>' 
+  // optional, screenshot activated. Default is true
+  screenshot: true or false   
 });
 </script>
 ```

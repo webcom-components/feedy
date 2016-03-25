@@ -15,7 +15,8 @@ const removeUndefined = obj => {
 export default class SendMessage extends Component {
 	static contextTypes = {
 		router: React.PropTypes.object,
-		ref: React.PropTypes.object
+		ref: React.PropTypes.object,
+		config: React.PropTypes.object
 	}
 
 	constructor() {
@@ -105,11 +106,11 @@ export default class SendMessage extends Component {
 						<label htmlFor="textareaContent">Message</label>
 						<textarea id="textareaContent" rows="6" required></textarea>
 					</div>
-					<div className={s.group}>
+					{this.context.config.screenshot && <div className={s.group}>
 						<input type="checkbox" id="checkboxScreenshot"></input>
 						{' '}
 						<label htmlFor="checkboxScreenshot">Capture d'écran ?</label>
-					</div>
+					</div>}
 					<input type="submit" value="Envoyer"></input>
 				</form>
 			</div>
