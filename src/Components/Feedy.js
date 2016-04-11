@@ -1,87 +1,97 @@
 import React, { Component } from 'react';
 import ReactDom from 'react-dom'; 
-import { Router, createMemoryHistory, Route } from 'react-router';
-import AccountCreated from './AccountCreated';
-import CreateAccount from './CreateAccount';
-import MessageSent from './MessageSent';
-import SendMessage from './SendMessage';
+
+import { connect } from 'react-redux';
+
+import * as actions from 'actions';
+import { outerHeight } from 'utils/dom';
+
 import s from './styles';
 
-export default class Feedy extends Component {
+class Feedy extends Component {
 	static propTypes = {
-		appName: React.PropTypes.string,
-		namespaceUrl: React.PropTypes.string,
-		screenshot: React.PropTypes.bool
+		appName: React.PropTypes.string.isRequired,
+		namespaceUrl: React.PropTypes.string.isRequired,
+		screenshot: React.PropTypes.bool.isRequired
 	}
 
 	constructor(props) {
 		super();
-		this.ref = new Webcom(`${props.namespaceUrl}/${props.appName}`);
+
 		this.config = {
 			screenshot: props.screenshot
 		};
 	}
 
 	static childContextTypes = {
-		ref: React.PropTypes.object.isRequired,
 		config: React.PropTypes.object.isRequired
 	}
 
 	getChildContext() {
 		return {
-			ref: this.ref,
 			config: this.config
-		}
+		};
 	}
 
-	hideContainer() {
-		let height = $(ReactDom.findDOMNode(this)).outerHeight(true) - $(this.refs.header).outerHeight(true);
-		$(ReactDom.findDOMNode(this)).css('bottom', `-${height}px`);  
-	}
-
-	toggleVisibility() {
-		ReactDom.findDOMNode(this).style.visibility = ReactDom.findDOMNode(this).style.visibility === 'hidden' ? '' : 'hidden';
-	}
-
-	SendMessageWrapper() {
-		return <SendMessage toggleVisibility={this.toggleVisibility.bind(this)} />;
+	static contextTypes = {
+		router: React.PropTypes.object.isRequired
 	}
 
 	headerOnClick = () => {
-		const bottom = $(ReactDom.findDOMNode(this)).css('bottom');
-		if (bottom !== '0px') {
-			$(ReactDom.findDOMNode(this)).css('bottom', 0);
+		this.props.dispatch(actions.toggleVisibility());
+	}
+	
+	/**
+	 * Display or hide Feedy
+	 */
+	refreshVisibility() {
+		if (this.props.visible) {
+			ReactDom.findDOMNode(this).style.bottom = 0;
 		}
 		else {
-			this.hideContainer();
+
+			ReactDom.findDOMNode(this).style.bottom = `${-this.getInnerHeight()}px`;
 		}
+	}
+
+	getInnerHeight() {
+		return outerHeight(ReactDom.findDOMNode(this)) - outerHeight(this.refs.header)
 	}
 
 	componentDidMount() {
-		const ref = new Webcom(this.props.namespaceUrl);
+		this.props.dispatch(actions.init({
+			namespaceUrl: this.props.namespaceUrl,
+			appName: this.props.appName,
+			router: this.context.router
+		}));
 
-    	this.hideContainer();
+		this.refreshVisibility();
+	}
+
+	componentDidUpdate() {
+		this.refreshVisibility();
 	}
 
     render() {
-        return (
-            <div className={`reset ${s.container}`} >
-				<div 
-					className={s.header} 
-					ref="header" 
-					onClick={this.headerOnClick}>
-					Donnez votre avis !
-				</div>
+		return (
+			<div className={`reset ${s.container}`}>
+				<div>
+					<div 
+						className={s.header} 
+						ref="header" 
+						onClick={this.headerOnClick}>
+						Donnez votre avis !
+					</div>
 
-				<div className={s.content}>
-					<Router history={createMemoryHistory()}>
-						<Route path="messageSent" component={MessageSent} />
-						<Route path="createAccount" component={CreateAccount} />
-						<Route path="accountCreated" component={AccountCreated} />
-						<Route path="*" component={this.SendMessageWrapper.bind(this)} />
-					</Router>
+					<div className={s.content}>
+						{this.props.children}
+					</div>
 				</div>
 			</div>
-        );
-    }
+		);
+	}
 }
+
+export default connect(state => ({
+	visible: state.main.visible
+}))(Feedy);

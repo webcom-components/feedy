@@ -1,18 +1,13 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
+import { connect } from 'react-redux';
+
 import s from './styles';
-import uaParser from 'ua-parser-js';
 
-const removeUndefined = obj => { 
-	Object.keys(obj).forEach(k => { 
-		if (typeof obj[k] === 'undefined') delete obj[k]; 
-		else if (typeof obj[k] === 'object') obj[k] = removeUndefined(obj[k]); 
-	});
-	return obj;
-}
+import * as actions from 'actions';
 
-export default class SendMessage extends Component {
+class SendMessage extends Component {
 	static contextTypes = {
 		router: React.PropTypes.object,
 		ref: React.PropTypes.object,
@@ -27,60 +22,39 @@ export default class SendMessage extends Component {
 	sendMessage(e) {
 		e.preventDefault();
 
-		const 
-			form = $('#formSendMessage')[0],
-			ident = $('#inputEmail').val(),
-			password = $('#inputPassword').val(),
-			textareaContent = $('#textareaContent').val(),
-			takeScreenshot = $('#checkboxScreenshot').is(':checked');
+		if (!this.props.logged) {
+			const {
+				email: { value: email }, 
+				password: { value: password },
+				message: { value: message }
+			} = this.refs;
 
-		new Promise((resolve, reject) => {
-			this.context.ref.authWithPassword({
-				email : ident,
-				password : password
-			}, (error, auth) => {
-				if(error){
-					reject('Utilisateur inconnu ou mot de passe incorrect');
-				} else if (auth) {
-					resolve(auth);
-				}
-			});
-		}).then((auth) => {
-			return {
-				url: window.location.toString(),
-				message: textareaContent,
-				userAgent: removeUndefined((new uaParser()).getResult()),
-				date: Date.now(),
-				user: {
-					email: auth.email,
-					uid: auth.uid,
-					id: auth.id					
-				},
+			const takeScreenshot = this.refs.screenshot ? this.refs.screenshot.checked : false;
 
-			};
-		}).then((msg) => {
-			if (!takeScreenshot) {
-				return msg;
-			}
-			return new Promise((resolve) => {
-				this.props.toggleVisibility();
+			this.props.dispatch(actions.loginAndSendMessage({
+				email,
+				password,
+				message,
+				takeScreenshot
+			}));
+		}
+		else {
+			const {
+				message: { value: message }, 
+				screenshot: { checked: takeScreenshot }
+			} = this.refs;
 
-				html2canvas(document.body, {
-					onrendered: canvas => {
-						this.props.toggleVisibility();
-						msg.screenshot = canvas.toDataURL();
-						resolve(msg);
-					}
-				});
-			});
-		}).then(((msg) => {
-			this.context.ref.child('messages').push(msg);
-			this.context.router.push('/messageSent');
-		}).bind(this)).catch(((e) => {
-			this.setState({
-				errorMsg: e
-			});
-		}).bind(this));
+			this.props.dispatch(actions.sendMessage({
+				message,
+				takeScreenshot
+			}));
+		}
+	}
+
+	resetErrorMsg() {
+		if (this.props.errorMsg) {
+			this.props.dispatch(actions.resetErrorMsg());			
+		}
 	}
 
 	render() {
@@ -94,20 +68,30 @@ export default class SendMessage extends Component {
 					{' '}
 					<Link to="/createAccount">Créez en un !</Link>
 				</p>
-				<form id="formSendMessage" onSubmit={this.sendMessage.bind(this)}>
-					<div className={s.error} id="sendMessageError">{this.state.errorMsg}</div>
-					<div className={s.group}>
+				<form ref="form" onSubmit={this.sendMessage.bind(this)}>
+					<div className={s.error} id="sendMessageError">{this.props.errorMsg}</div>
+					{!this.props.logged && <div className={s.group}>
 						<label htmlFor="inputEmail">Email *</label>
-						<input id="inputEmail" type="email" required></input>
+						<input 
+							id="inputEmail" 
+							ref="email" 
+							type="email" 
+							required
+							onChange={this.resetErrorMsg.bind(this)}></input>
 						<label htmlFor="inputPassword">Mot de passe *</label>
-						<input id="inputPassword" type="password" required></input>
-					</div>
+						<input 
+							id="inputPassword" 
+							ref="password" 
+							type="password" 
+							required
+							onChange={this.resetErrorMsg.bind(this)}></input>
+					</div>}
 					<div className={s.group}>
 						<label htmlFor="textareaContent">Message</label>
-						<textarea id="textareaContent" rows="6" required></textarea>
+						<textarea id="textareaContent" ref="message" rows="6" required></textarea>
 					</div>
 					{this.context.config.screenshot && <div className={s.group}>
-						<input type="checkbox" id="checkboxScreenshot"></input>
+						<input type="checkbox" ref="screenshot" id="checkboxScreenshot"></input>
 						{' '}
 						<label htmlFor="checkboxScreenshot">Capture d'écran ?</label>
 					</div>}
@@ -117,3 +101,8 @@ export default class SendMessage extends Component {
 		);
 	}
 }
+
+export default connect(state => ({
+	logged: state.main.logged,
+	errorMsg: state.main.sendMessageError
+}))(SendMessage);

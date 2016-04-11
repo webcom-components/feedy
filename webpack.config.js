@@ -8,10 +8,8 @@ const process = require('process');
 const config = {
 	entry: {
 		app: [
-			'imports?exports=>false&module=>false!jquery',
 			'imports?exports=>false&module=>false!webcom',
-			'script!es6-promise',
-			'imports?this=>global!exports?global.fetch!whatwg-fetch',
+			'babel-polyfill',
 			'script!html2canvas',
 			'react',
 			'./src/assets/images/test.jpg',
@@ -29,6 +27,7 @@ const config = {
 	resolve: {
 		extensions: ['', '.webpack.js', '.web.js', '.js', '.css'],
 		root: __dirname,
+		modulesDirectories: ['node_modules', 'src'],
 		alias: {
 			jquery: 'jquery/dist/jquery.min.js',
 			webcom: 'webcom/webcom.js'
@@ -50,6 +49,12 @@ const config = {
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
 			inject: 'head'
+		}),
+		new webpack.ProvidePlugin({
+			'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'
+		}),
+		new webpack.DefinePlugin({
+			__DEVTOOLS__: process.env.NODE_ENV !== 'production'
 		})
 	],				
 	progress: true,
