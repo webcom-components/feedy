@@ -49,13 +49,12 @@ class Feedy extends Component {
 			ReactDom.findDOMNode(this).style.bottom = 0;
 		}
 		else {
-
 			ReactDom.findDOMNode(this).style.bottom = `${-this.getInnerHeight()}px`;
 		}
 	}
 
 	getInnerHeight() {
-		return outerHeight(ReactDom.findDOMNode(this)) - outerHeight(this.refs.header)
+		return outerHeight(ReactDom.findDOMNode(this)) - outerHeight(this.refs.header);
 	}
 
 	componentDidMount() {

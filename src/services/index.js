@@ -71,6 +71,7 @@ const removeUndefined = obj => {
 export function getUserData() {
 	return {
 		url: window.location.toString(),
+		domain: window.location.host,
 		userAgent: removeUndefined((new uaParser()).getResult())
 	};
 }

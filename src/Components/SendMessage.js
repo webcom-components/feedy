@@ -57,17 +57,21 @@ class SendMessage extends Component {
 		}
 	}
 
+	logout() {
+		this.props.dispatch(actions.logout());
+	}
+
 	render() {
 		return (
 			<div>
 				<p>
 					Laissez-nous un message. Nous vous contacterons dès que possible.
 				</p>
-				<p>
+				{!this.props.logged && <p>
 					Pas de compte ?
 					{' '}
 					<Link to="/createAccount">Créez en un !</Link>
-				</p>
+				</p>}
 				<form ref="form" onSubmit={this.sendMessage.bind(this)}>
 					<div className={s.error} id="sendMessageError">{this.props.errorMsg}</div>
 					{!this.props.logged && <div className={s.group}>
@@ -85,6 +89,10 @@ class SendMessage extends Component {
 							type="password" 
 							required
 							onChange={this.resetErrorMsg.bind(this)}></input>
+					</div>}
+					{this.props.logged && <div className={s.group}>
+						Bonjour {this.props.email} !
+						<div><a onClick={this.logout.bind(this)}>Se déconnecter</a></div>
 					</div>}
 					<div className={s.group}>
 						<label htmlFor="textareaContent">Message</label>
@@ -104,5 +112,6 @@ class SendMessage extends Component {
 
 export default connect(state => ({
 	logged: state.main.logged,
+	email: state.main.auth && state.main.auth.email,
 	errorMsg: state.main.sendMessageError
 }))(SendMessage);

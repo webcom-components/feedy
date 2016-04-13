@@ -16,12 +16,17 @@ export default function(state=initialState, {type, payload}) {
 	case 'LOGGED':
 		return {
 			...state,
-			logged: true
+			logged: true,
+			auth: {
+				email: payload.email,
+				uid: payload.uid
+			}
 		};
 	case 'UNLOGGED':
 		return {
 			...state,
-			logged: false
+			logged: false,
+			email: undefined
 		};
 	case 'SEND_MESSAGE_ERROR':
 		return {
@@ -38,13 +43,6 @@ export default function(state=initialState, {type, payload}) {
 			...state,
 			createUserError: null,
 			sendMessageError: null
-		};
-	case 'USER_CREATED':
-		return {
-			...state,
-			auth: { 
-				...payload.auth
-			}
 		};
 	default:
 		return state;

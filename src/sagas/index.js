@@ -4,20 +4,21 @@ import {
 	init, 
 	login as webcomLogin, 
 	createAccount, 
-	logout, 
+	logout as logoutWebcom, 
 	push, 
 	getUserData,
 	screenshot
 } from 'services';
 import { Components, Component } from 'actions';
 import * as actions from 'actions';
+import { getAuth } from './selectors';
 
 let appRouter;
 
 export function* login(email, password) {
 	try {
 		const auth = yield call(webcomLogin, email, password);
-		yield put(actions.logged, auth);
+		yield put(actions.logged({email: auth.email, uid: auth.uid}));
 		return auth;
 	}
 	catch (e) {
@@ -45,7 +46,9 @@ export function* sendMessage(message, auth, takeScreenshot) {
 		};
 	}
 
-	yield call(push, 'message', data);
+	const path = `${encodeURIComponent(data.domain)}}/messages`;
+
+	yield call(push, path, data);
 	yield call(appRouter.push, '/messageSent');
 }
 
@@ -58,13 +61,15 @@ export function* watchInit() {
 export function* watchSendMessage() {
 	while (true) {
 		const { payload: { 
-			content,
+			message,
 			takeScreenshot } 
 		} = yield take('SEND_MESSAGE');
 
+		const auth = yield select(getAuth);
+
 		// get auth
 		if ( auth ) {
-			yield call(sendMessage, content, auth, takeScreenshot);
+			yield call(sendMessage, message, auth, takeScreenshot);
 		}
 	}
 }
@@ -105,9 +110,18 @@ export function* watchCreateUser() {
 	}
 }
 
+export function* watchLogout() {
+	while (true) {
+		yield take('LOGOUT');
+		yield call(logoutWebcom);
+		yield put(actions.unlogged());
+	}
+}
+
 export default function* root() {
 	yield [
 		fork(watchInit),
+		fork(watchLogout),
 		fork(watchSendMessage),
 		fork(watchLoginAndSendMessage),
 		fork(watchCreateUser)
