@@ -45,12 +45,15 @@ class Feedy extends Component {
 	 * Display or hide Feedy
 	 */
 	refreshVisibility() {
-		if (this.props.visible) {
-			ReactDom.findDOMNode(this).style.bottom = 0;
-		}
-		else {
-			ReactDom.findDOMNode(this).style.bottom = `${-this.getInnerHeight()}px`;
-		}
+		setTimeout(function() {
+			if (this.props.visible) {
+				ReactDom.findDOMNode(this).style.bottom = 0;
+			}
+			else {
+
+				ReactDom.findDOMNode(this).style.bottom = `${-this.getInnerHeight()}px`;
+			}
+		}.bind(this), 100); // delay for FF
 	}
 
 	getInnerHeight() {
