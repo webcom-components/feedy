@@ -54,7 +54,10 @@ const config = {
 			'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'
 		}),
 		new webpack.DefinePlugin({
-			__DEVTOOLS__: process.env.NODE_ENV !== 'production'
+			__DEVTOOLS__: process.env.NODE_ENV !== 'production',
+			'process.env': {
+				NODE_ENV: JSON.stringify(process.env.NODE_ENV)
+			}
 		})
 	],				
 	progress: true,
